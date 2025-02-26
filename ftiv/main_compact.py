@@ -40,10 +40,9 @@ class argparseCondition():
         return start_date, end_date
     
 
-
-
 class FigureBuilder():
-    def __init__(self):
+    def __init__(self, debug=False):
+        self.debug = debug
         pass
 
     def spectral_temporal_metrics(self, y):
@@ -59,13 +58,80 @@ class FigureBuilder():
         ytest = np.convolve(ytest, kernel, mode='same')
         return xtest, ytest
     
-    def savitzky_golay_interpolation(self, x, y, xtest,window_size=15, polyorder = 3):
+    def rbf_ensemble_interpolation(self, x, y, xtest, rbf_sigma=[8, 16, 32]):
+        def compute_rbf_weights(time_series, center, fwhm):
+            """Computes RBF weights using a Gaussian kernel."""
+            sigma = fwhm / 2.355
+            return np.exp(-((time_series - center) ** 2) / (2 * sigma ** 2))
 
-        y_test = savgol_filter(y, window_size, polyorder)
-        interpolator_func = interp1d(x, y_test, kind='linear', fill_value='extrapolate')
-        ytest = interpolator_func(xtest)
-        return xtest, ytest
+        def apply_rbf_interpolation(x_train, y_train, x_test, fwhm, user_weight, cutoff_value):
+            """Applies RBF interpolation to predict values at x_test points."""
+            predictions = []
+            weights_list = []
+            for test_point in x_test:
+                weights = compute_rbf_weights(x_train, test_point, fwhm)
+                valid_mask = weights >= cutoff_value
+                if not np.any(valid_mask):  # Avoid division by zero or empty data
+                    predictions.append(np.nan)
+                    weights_list.append(0)
+                    continue
+                # Apply weights only to valid data points
+                y_valid = y_train[valid_mask]
+                weights_valid = weights[valid_mask]
 
+                weighted_sum = np.sum(y_valid * weights_valid)
+                weight_sum = np.sum(weights_valid)
+
+                interpolated_value = weighted_sum / weight_sum if weight_sum != 0 else np.nan
+                availability_score = (weight_sum / np.sum(weights)) * user_weight
+
+                predictions.append(interpolated_value)
+                weights_list.append(availability_score)
+
+            return np.array(predictions), np.array(weights_list)
+
+        def apply_ensemble_rbf_interpolation(x_train, y_train, x_test, fwhm_list, user_weights, cutoff_value=0.01):
+            """Applies ensemble RBF interpolation using multiple kernel sizes."""
+            if user_weights is None:
+                user_weights = [1.0] * len(fwhm_list)
+            assert len(fwhm_list) == len(user_weights), "Mismatch between FWHM list and user weights"
+
+            all_predictions, all_weights = [], []
+            for fwhm, user_weight in zip(fwhm_list, user_weights):
+                pred, weight = apply_rbf_interpolation(x_train, y_train, x_test, fwhm, user_weight, cutoff_value)
+                all_predictions.append(pred)
+                all_weights.append(weight)
+
+            # Weighted ensemble averaging
+            sum_weights = np.sum(all_weights, axis=0)
+            ensemble_prediction = np.sum(np.multiply(all_predictions, all_weights), axis=0) / sum_weights
+
+            return ensemble_prediction
+
+        def convert_days_to_decimal_year(days_since_epoch):
+            """Converts days since epoch (1970-01-01) to decimal year format."""
+            date = datetime(1970, 1, 1) + timedelta(days=int(days_since_epoch))
+            year = date.year
+            day_of_year = date.timetuple().tm_yday
+            total_days = 366 if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) else 365
+            return year + (day_of_year - 1) / total_days
+
+        # Convert input timestamps to decimal years
+        x_unique, indices = np.unique(x, return_index=True)
+        y_unique = y[indices]
+        x_unique = np.array([convert_days_to_decimal_year(d) for d in x_unique])
+        x_test_new = np.array([convert_days_to_decimal_year(d) for d in xtest])
+
+        # RBF settings
+        rbf_cutoff = 0.01  # Minimum weight threshold
+        rbf_fwhms = [d / 365 for d in rbf_sigma]  # RBF kernel sizes in decimal years
+        rbf_user_weights = [1, 1, 1]  # Relative weights of different scales
+
+        # Perform ensemble RBF interpolation
+        y_test = apply_ensemble_rbf_interpolation(x_unique, y_unique, x_test_new, rbf_fwhms, rbf_user_weights, rbf_cutoff)
+        
+        return xtest, y_test
+    
     def harmonic_function(self, x, y, xtest):
         def objective_simple(x, a0, a1, b1, c1):
             return a0 + a1 * np.cos(2 * np.pi / 365 * x) + b1 * np.sin(2 * np.pi / 365 * x) + c1 * x
@@ -84,6 +150,13 @@ class FigureBuilder():
         ytest = func_(xtest, *popt)
         return xtest, ytest
     
+    def savitzky_golay_interpolation(self, x, y, xtest,window_size=15, polyorder = 3):
+
+        y_test = savgol_filter(y, window_size, polyorder)
+        interpolator_func = interp1d(x, y_test, kind='linear', fill_value='extrapolate')
+        ytest = interpolator_func(xtest)
+        return xtest, ytest
+    
     def generate_html(self, x, y, xtest, coord_x, coord_y, tile, start_time, end_time, sensor, band):
 
 
@@ -92,8 +165,9 @@ class FigureBuilder():
             'Spectral-temporal metrics': self.spectral_temporal_metrics,
             'Linear interpolation': self.linear_interpolation,
             'Moving average (15-days window)': self.moving_average,
-            'Savitzky-Golay (15-days window)': self.savitzky_golay_interpolation,
-            'Harmonic': self.harmonic_function
+            'RBF interpolation (Sigma 8,16,32)': self.rbf_ensemble_interpolation,
+            'Harmonic': self.harmonic_function,
+            'Savitzky-Golay (15-days window)': self.savitzky_golay_interpolation
         }
 
         func_name_list = list(func_dict.keys())
@@ -138,6 +212,8 @@ class FigureBuilder():
                     xtest, ytest = func_dict[func_name_list[i]](x, y, xtest)
                     ax.plot(xtest, ytest, linewidth=2, color='#ff00ff', label='Interpolation')
             except Exception as e:
+                if self.debug:
+                    print(e)
                 ax.text(x.max()/2, y.max()/2, 'Failed!', ha='center', va='center', fontsize=50, color='red')
             ax.set_ylim(0, y.max()*1.1)
             ax.set_xlim(xtest.min(), xtest.max())
@@ -431,7 +507,7 @@ def main():
     else:
         xtest = np.linspace(days_since_epoch(start_date), days_since_epoch(end_date), 200)
         
-        builder = FigureBuilder()
+        builder = FigureBuilder(debug=False)
 
         builder.generate_html(x_value, y_value, xtest,
                         coord_x=coord_x,
