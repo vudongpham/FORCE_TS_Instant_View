@@ -58,7 +58,7 @@ class FigureBuilder():
         ytest = np.convolve(ytest, kernel, mode='same')
         return xtest, ytest
     
-    def rbf_ensemble_interpolation(self, x, y, xtest, rbf_sigma=[8, 16, 32]):
+    def rbf_ensemble_interpolation(self, x, y, xtest, rbf_sigma=[16, 32, 48]):
         def compute_rbf_weights(time_series, center, fwhm):
             """Computes RBF weights using a Gaussian kernel."""
             sigma = fwhm / 2.355
@@ -165,7 +165,7 @@ class FigureBuilder():
             'Spectral-temporal metrics': self.spectral_temporal_metrics,
             'Linear interpolation': self.linear_interpolation,
             'Moving average (15-days window)': self.moving_average,
-            'RBF interpolation (Sigma 8,16,32)': self.rbf_ensemble_interpolation,
+            'RBF interpolation (Sigma 16, 32, 48)': self.rbf_ensemble_interpolation,
             'Harmonic': self.harmonic_function,
             'Savitzky-Golay (15-days window)': self.savitzky_golay_interpolation
         }
