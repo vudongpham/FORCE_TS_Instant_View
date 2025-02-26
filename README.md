@@ -1,7 +1,7 @@
 # FORCE Time-series Instant View (FTIV)
 Instant visualize time-series data in a given location from  FORCE level-2 datacube
 
-## [Expected result](https://github.com/vudongpham/FORCE_TS_Instant_View)
+## [Expected result](https://vudongpham.github.io/FORCE_TS_Instant_View)
 
 ### Installation with pip
 ```
