@@ -12,11 +12,11 @@ python -m pip install git+https://github.com/vudongpham/FORCE_TS_Instant_View.gi
 
 ### Example run
 ```
-ftiv --daterange 20180101,20201231 \
+ftiv --daterange 20180101,20191231 \
     --sensor all \
     --band NIR \
-    /path/to/your/datacube/level2 \
-    4547853,3445623
+    /home/phamv/edc/level2/ \
+    4547747.0,3445885.2
 ```
 <i>Required arguments:</i>
 
