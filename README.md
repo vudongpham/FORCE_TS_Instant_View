@@ -3,7 +3,7 @@
 - Instant visualize multiple data aggregation, interpolation methods
 - No external data is written, space saved!
 
-## [Here is the example report running the tool](https://vudongpham.github.io/FORCE_TS_Instant_View)
+## [Here is the example result when running the tool](https://vudongpham.github.io/FORCE_TS_Instant_View)
 
 ### Installation with pip
 ```
