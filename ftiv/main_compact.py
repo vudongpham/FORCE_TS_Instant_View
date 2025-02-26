@@ -147,7 +147,9 @@ class FigureBuilder():
         ytrain = np.concatenate([y, y, y])
         func_ = objective_full
         popt, _ = curve_fit(func_, xtrain, ytrain)
-        ytest = func_(xtest, *popt)
+        xtest_feed = np.concatenate([xtest - 365, xtest, xtest + 365])
+        ytest = func_(xtest_feed, *popt)
+        ytest = ytest[len(xtest): len(xtest) * 2]
         return xtest, ytest
     
     def savitzky_golay_interpolation(self, x, y, xtest,window_size=15, polyorder = 3):
