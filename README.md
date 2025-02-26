@@ -29,7 +29,7 @@ ftiv --daterange 20180101,20191231 \
 
 <i>Optional arguments:</i>
 - -d | --daterange: Start date and end date = date range to be considered. Valid values: [YYYYMMDD,YYYYMMDD] <br><br>
-- -s | --sensors:   List of sensors separated by ",". Valid values: LND05,LND07,LND08,LND09,SEN2A,SEN2B,... or all (Default is all) <br><br>
+- -s | --sensors:   List of sensors separated by ",". Valid values: LND05,LND07,LND08,LND09,SEN2A,SEN2B,... or all. Default: all <br><br>
 - -b | --band:  Which band to view. Valid value: only one from [RED, GREEN, BLUE, NIR, SWIR1, SWIR2]. Default: NIR <br><br>
 - --yx : Call this if you add coordinate in format Y,X instead of X,Y <br><br>
 - --printarray : Call this if you only want to print out array lists of spectral values and dates. Creating HTML will be disabled. \
