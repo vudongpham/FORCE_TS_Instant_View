@@ -1,5 +1,5 @@
 # (PROTOTYPE) FORCE Time-series Instant View (FTIV) 
-- Instant visualize time-series data in a given location from  FORCE level-2 datacube.
+- Instant visualize time-series data in a given location from  [FORCE](https://github.com/davidfrantz/force) level-2 datacube.
 - Instant visualize multiple data aggregation, interpolation methods
 - No external data is written, space saved!
 
