@@ -5,12 +5,12 @@
 
 ## [Here is the example result when running the tool](https://vudongpham.github.io/FORCE_TS_Instant_View)
 
-### Installation with pip
+### 1. Install with pip
 ```
 python -m pip install git+https://github.com/vudongpham/FORCE_TS_Instant_View.git
 ```
 
-### Example run
+### 2. Example run
 ```
 ftiv --daterange 20180101,20191231 \
     --sensor all \
@@ -36,6 +36,7 @@ ftiv --daterange 20180101,20191231 \
       Dates    : [days since 1970-01-01, ...] \
       Spectral : [spectral, ...]
 
-### Result: A HTML file will be created, looks like [this](https://vudongpham.github.io/FORCE_TS_Instant_View)
+### 3. Result
+A HTML file will be created, looks like [this](https://vudongpham.github.io/FORCE_TS_Instant_View).
 
  
