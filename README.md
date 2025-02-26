@@ -35,7 +35,6 @@ ftiv --daterange 20180101,20201231 \
 - --printarray : Call this if you only want to print out array lists of spectral values and dates. Creating report is disabled. \
       Dates    : [days since 1970-01-01, ...] \
       Spectral : [spectral, ...]
-- <br><br>
 
 
 
