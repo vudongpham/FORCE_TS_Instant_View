@@ -15,7 +15,7 @@ python -m pip install git+https://github.com/vudongpham/FORCE_TS_Instant_View.gi
 ftiv --daterange 20180101,20191231 \
     --sensor all \
     --band NIR \
-    /home/phamv/edc/level2/ \
+    /path/to/your/datacube/level2 \
     4547747.0,3445885.2
 ```
 <i>Required arguments:</i>
