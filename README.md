@@ -10,7 +10,7 @@
 python -m pip install git+https://github.com/vudongpham/FORCE_TS_Instant_View.git
 ```
 
-### Example Run
+### Example run
 ```
 ftiv --daterange 20180101,20201231 \
     --sensor all \
