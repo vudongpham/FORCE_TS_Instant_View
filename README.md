@@ -24,8 +24,7 @@ ftiv --daterange 20180101,20201231 \
   FORCE datacube Level-2 directory path, the "datacube-definition.prj" file MUST exist in this directory
 
 - coordinates\
-  Projected X,Y coordinates separated by "," (must be the same as the projection defined in datacube-definition.prj) \
-  If you provide Y,X format, enable --yx argument
+  Projected X,Y coordinates separated by "," (must be the same as the projection defined in datacube-definition.prj). If you provide Y,X format, enable --yx argument
 
 
 <i>Optional arguments:</i>
