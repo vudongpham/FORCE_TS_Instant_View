@@ -430,9 +430,9 @@ def main():
         print('--Spectral array--\n', y_value.tolist(), flush=True)
     else:
         xtest = np.linspace(days_since_epoch(start_date), days_since_epoch(end_date), 200)
+        
         builder = FigureBuilder()
 
-        builder = FigureBuilder()
         builder.generate_html(x_value, y_value, xtest,
                         coord_x=coord_x,
                         coord_y=coord_y,
