@@ -2,8 +2,7 @@
 - Instant visualize time-series data of a given location from [FORCE](https://github.com/davidfrantz/force) level-2 datacube.
 - Instant visualize multiple data aggregation, interpolation methods
 - No external data is written, space saved!
-
-## [Here is the example result when running the tool](https://vudongpham.github.io/FORCE_TS_Instant_View)
+## &#8594; [Here is the example result when running the tool](https://vudongpham.github.io/FORCE_TS_Instant_View)
 
 ### 1. Install with pip
 ```
