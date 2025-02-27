@@ -4,17 +4,33 @@
 - No external data is written, space saved!
 ## &#8594; [Here is the example result when running the tool](https://vudongpham.github.io/FORCE_TS_Instant_View)
 
-### 1. Install with pip
+### 1. Installation
+Install with pip
 ```
 python -m pip install git+https://github.com/vudongpham/FORCE_TS_Instant_View.git
 ```
-
+Or pull the docker image
+```
+docker pull vudongpham/ftiv
+```
 ### 2. Example run
+Run with python environment
 ```
 ftiv --daterange 20180101,20191231 \
     --sensor all \
     --band NIR \
     /path/to/your/datacube/level2 \
+    4547747.0,3445885.2
+```
+Run with docker image
+```
+docker run --rm vudongpham/ftiv \
+    -v $(pwd):$(pwd) \
+    -v /path/to/your/datacube/level2:/level2dir
+    --daterange 20180101,20191231 \
+    --sensor all \
+    --band NIR \
+    /level2dir \
     4547747.0,3445885.2
 ```
 <i>Required arguments:</i>
