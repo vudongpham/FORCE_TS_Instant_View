@@ -26,7 +26,7 @@ Run with docker image
 ```
 docker run --rm vudongpham/ftiv \
     -v $(pwd):$(pwd) \
-    -v /path/to/your/datacube/level2:/level2dir
+    -v /path/to/your/datacube/level2:/level2dir \
     --daterange 20180101,20191231 \
     --sensor all \
     --band NIR \
