@@ -462,7 +462,6 @@ def main():
 
     args = parser.parse_args()
 
-
     coords = args.coordinates
     y_first = args.yx
 
