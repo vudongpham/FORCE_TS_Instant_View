@@ -52,6 +52,6 @@ docker run --rm vudongpham/ftiv \
       Spectral : [spectral, ...]
 
 ### 3. Result
-A HTML file will be created, looks like [this](https://vudongpham.github.io/FORCE_TS_Instant_View).
-
+A HTML file will be created, looks like [this](https://vudongpham.github.io/FORCE_TS_Instant_View).\
+(Note: The buttons for `Paper` and `UDF` are just now placeholders!)
  
