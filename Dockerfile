@@ -6,4 +6,4 @@ COPY . /app
 
 RUN python -m pip install --no-cache-dir .
 
-ENTRYPOINT ["ftiv"]
+CMD []
