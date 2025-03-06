@@ -6,6 +6,7 @@ setup(
     packages=find_packages(),  # Automatically finds sub-packages
     install_requires=[
         "rasterio",
+        "pyproj",
         "scipy",
         "matplotlib",
         "tqdm"

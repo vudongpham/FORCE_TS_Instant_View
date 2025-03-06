@@ -1,4 +1,5 @@
 import rasterio
+from pyproj import Transformer
 import numpy as np
 from itertools import product
 import os
@@ -159,7 +160,7 @@ class FigureBuilder():
         ytest = interpolator_func(xtest)
         return xtest, ytest
     
-    def generate_html(self, x, y, xtest, coord_x, coord_y, tile, start_time, end_time, sensor, band):
+    def generate_html(self, x, y, xtest, coord_x, coord_y, x_lat, x_lon, tile, start_time, end_time, sensor, band):
 
 
         func_dict = {
@@ -182,12 +183,13 @@ class FigureBuilder():
         html_content = f"""<!DOCTYPE html>
         <html>
         <head>
-            <title>Results</title>
+            <title>FTIV results</title>
         </head>
         <body>
             <h1><u>FORCE Time-series Instant View</u></h1>
             <ul>
-            <li><h2>X: <span style="color:red;">{coord_x}</span> Y: <span style="color:red;">{coord_y}</span></h2></li>
+            <li><h2>Latitute: <span style="color:red;">{x_lat:.2f}</span> Longitute: <span style="color:red;">{x_lon:.2f}</span></h2></li>
+            <li><h2>Datacube projection X: <span style="color:red;">{coord_x:.2f}</span> Y: <span style="color:red;">{coord_y:.2f}</span></h2></li>
             <li><h2>Located in Tile: <span style="color:red;">{tile}</span></h2></li>
             <li><h2>From: <span style="color:red;">{start_time}</span> To: <span style="color:red;">{end_time}</span></h2></li>
             <li><h2>Sensors: <span style="color:red;">{sensor}</span></h2></li>
@@ -296,7 +298,7 @@ def get_cso_value():
     cso_value.sort()
     return cso_value
 
-def find_tile(yx_coords, level_2_dir, prj_file_name="datacube-definition.prj", y_first=True):
+def find_tile(latlon_coords, level_2_dir, prj_file_name="datacube-definition.prj"):
     prj_dir = os.path.join(level_2_dir, prj_file_name)
 
     with open(prj_dir, "r") as file:
@@ -304,22 +306,27 @@ def find_tile(yx_coords, level_2_dir, prj_file_name="datacube-definition.prj", y
 
     prj_lines = [x.strip() for x in prj_lines]
 
+    proj_wkt = prj_lines[0]
+    target_crs = rasterio.CRS.from_wkt(proj_wkt)
+
+    transformer = Transformer.from_crs("EPSG:4326", target_crs, always_xy=True)
+
     x_origin = float(prj_lines[3])
     y_origin = float(prj_lines[4])
     tile_size = float(prj_lines[5])
 
-    coords = yx_coords.split(',')
-    if y_first:
-        coords = coords[::-1]
-    coords = tuple([float(x) for x in coords])
-    x_test = coords[0]
-    y_test = coords[1]
+    latlon_coords = latlon_coords.split(',')
+
+    lat, lon = tuple([float(x) for x in latlon_coords])
+
+    x_test, y_test = transformer.transform(lon, lat)
 
     tile_X = int(np.floor((x_test - x_origin) / tile_size))
     tile_Y = int(np.floor((y_origin - y_test) / tile_size))
 
     tile_found = f"X{tile_X:04d}_Y{tile_Y:04d}"
-    return tile_found, x_test, y_test
+
+    return tile_found, x_test, y_test, lat, lon
 
 
 def filter_images(tile_dir, start_date, end_date, sensors='all'):
@@ -439,11 +446,7 @@ def main():
         type=str,
         metavar='',
     )
-    parser.add_argument(
-        '--yx',
-        help='Call this if you add coordinate is in format Y,X instead of X,Y',
-        action="store_true"
-    )
+
     parser.add_argument(
         '--printarray',
         help='Call this if you only want to print out array lists of spectral values and dates. Creating report is disabled',
@@ -456,14 +459,13 @@ def main():
 
     parser.add_argument(
         'coordinates',
-        help='Projected X,Y coordinates separated by "," (must be the same as datacube images)'
-            'If you provide Y,X format, enable -yx argument'
+        help='Geographic coordinates (Lat,Lon) (Y,X) separated by ","'
+
     )
 
     args = parser.parse_args()
 
     coords = args.coordinates
-    y_first = args.yx
 
     start_date, end_date = args.daterange
 
@@ -475,7 +477,7 @@ def main():
 
     isprint = args.printarray
 
-    tile, coord_x, coord_y = find_tile(coords, level2_dir, y_first=y_first)
+    tile, coord_x, coord_y, x_lat, x_lon = find_tile(coords, level2_dir)
 
     tile_path = os.path.join(level2_dir, tile)
 
@@ -513,6 +515,8 @@ def main():
         builder.generate_html(x_value, y_value, xtest,
                         coord_x=coord_x,
                         coord_y=coord_y,
+                        x_lat=x_lat,
+                        x_lon=x_lon,
                         tile=tile,
                         start_time=start_date,
                         end_time=end_date,
@@ -524,7 +528,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-    
