@@ -20,36 +20,35 @@ ftiv --daterange 20180101,20191231 \
     --sensor all \
     --band NIR \
     /path/to/your/datacube/level2 \
-    4547747.0,3445885.2
+    52.356415,13.369327
 ```
 Run with docker image
 ```
-docker run --rm vudongpham/ftiv \
+docker run --rm vudongpham/ftiv ftiv \
     -v $(pwd):$(pwd) \
     -v /path/to/your/datacube/level2:/level2dir \
     --daterange 20180101,20191231 \
     --sensor all \
     --band NIR \
     /level2dir \
-    4547747.0,3445885.2
+    52.356415,13.369327
 ```
 <i>Required arguments:</i>
 
-- level2dir \
+- `level2dir` \
   FORCE datacube Level-2 directory path, the "datacube-definition.prj" file MUST exist in this directory
 
-- coordinates\
-  Projected X,Y coordinates separated by "," (must be the same as the projection defined in datacube-definition.prj). If you provide Y,X format, enable --yx argument
+- `coordinates`\
+  Geographic coordinates Lat,Lon (Y,X) separated by ","
 
 
 <i>Optional arguments:</i>
-- -d | --daterange: Start date and end date = date range to be considered. Valid values: [YYYYMMDD,YYYYMMDD] <br><br>
-- -s | --sensors:   List of sensors separated by ",". Valid values: LND05,LND07,LND08,LND09,SEN2A,SEN2B,... or all. Default: all <br><br>
-- -b | --band:  Which band to view. Valid value: only one from [RED, GREEN, BLUE, NIR, SWIR1, SWIR2]. Default: NIR <br><br>
-- --yx : Call this if you provide coordinate in Y,X format instead of X,Y <br><br>
-- --printarray : Call this if you only want to print out array lists of spectral values and dates. Creating HTML will be disabled. \
+- `-d` | `--daterange`: Start date and end date = date range to be considered. Valid values: [YYYYMMDD,YYYYMMDD] <br><br>
+- `-s` | `--sensors`:   List of sensors separated by ",". Valid values: LND05,LND07,LND08,LND09,SEN2A,SEN2B,... or all. Default: all <br><br>
+- `-b` | `--band`:  Which band to view. Valid value: only one from [RED, GREEN, BLUE, NIR, SWIR1, SWIR2]. Default: NIR <br><br>
+- `--printarray` : Call this if you only want to print out array lists of spectral values and dates. Creating HTML will be disabled. \
       Dates    : [days since 1970-01-01, ...] \
-      Spectral : [spectral, ...]
+      Spectral : [spectral value, ...]
 
 ### 3. Result
 A HTML file will be created, looks like [this](https://vudongpham.github.io/FORCE_TS_Instant_View).\
