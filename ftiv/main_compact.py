@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 from scipy.signal import savgol_filter
-from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -153,24 +152,20 @@ class FigureBuilder():
         ytest = ytest[len(xtest): len(xtest) * 2]
         return xtest, ytest
     
-    def savitzky_golay_interpolation(self, x, y, xtest,window_size=15, polyorder = 3):
-
-        y_test = savgol_filter(y, window_size, polyorder)
-        interpolator_func = interp1d(x, y_test, kind='linear', fill_value='extrapolate')
-        ytest = interpolator_func(xtest)
+    def savitzky_golay_interpolation(self, x, y, xtest,window_size=30, polyorder = 2):
+        ytest = np.interp(xtest, x, y)
+        ytest = savgol_filter(ytest, window_size, polyorder, mode='nearest')
         return xtest, ytest
     
     def generate_html(self, x, y, xtest, coord_x, coord_y, x_lat, x_lon, tile, start_time, end_time, sensor, band):
-
-
         func_dict = {
             'Raw data': 0,
             'Spectral-temporal metrics': self.spectral_temporal_metrics,
             'Linear interpolation': self.linear_interpolation,
-            'Moving average (15-days window)': self.moving_average,
-            'RBF interpolation (Sigma 30, 60, 90)': self.rbf_ensemble_interpolation,
+            'Moving average': self.moving_average,
+            'RBF interpolation': self.rbf_ensemble_interpolation,
             'Harmonic': self.harmonic_function,
-            'Savitzky-Golay (15-days window)': self.savitzky_golay_interpolation
+            'Savitzky-Golay': self.savitzky_golay_interpolation
         }
 
         func_name_list = list(func_dict.keys())
