@@ -9,9 +9,13 @@ Install with pip
 ```
 python -m pip install git+https://github.com/vudongpham/FORCE_TS_Instant_View.git
 ```
-Or pull the docker image
+Using docker image
 ```
-docker pull vudongpham/ftiv
+docker pull vudongpham/ftiv:latest
+```
+Using singularity
+```
+singularity pull ftiv.sif docker://vudongpham/ftiv:latest
 ```
 ### 2. Example run
 Run with python environment
@@ -32,6 +36,15 @@ docker run --rm  \
     --sensor all \
     --band NIR \
     /level2dir \
+    52.356415,13.369327
+```
+Run with singularity
+```
+singularity exec ftiv.sif \
+    ftiv --daterange 20180101,20191231 \
+    --sensor all \
+    --band NIR \
+    /path/to/your/datacube/level2 \
     52.356415,13.369327
 ```
 <i>Required arguments:</i>
