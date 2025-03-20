@@ -55,6 +55,9 @@ singularity exec ftiv.sif \
 - `coordinates`\
   Geographic coordinates Lat,Lon (Y,X) separated by ","
 
+> [!IMPORTANT]  
+> If the Latitude,Longitude starts with negative value, e.g., `-60.0,50.0`. You must add `--` before `coordinates`
+> -> `-- -60.0,50.0.`
 
 <i>Optional arguments:</i>
 - `-d` | `--daterange`: Start date and end date = date range to be considered. Valid values: [YYYYMMDD,YYYYMMDD] <br><br>
