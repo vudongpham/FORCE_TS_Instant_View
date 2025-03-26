@@ -270,8 +270,8 @@ def print_decoded_qai(value):
     )
     print(decoded_string)
 
-def get_cso_value():
-    filtering_list = {
+def get_cso_value(best_quality=False):
+    filtering_default = {
         'Valid data' : ['0'],
         'Cloud state' : ['00'],
         'Cloud shadow flag' : ['0'],
@@ -287,6 +287,26 @@ def get_cso_value():
         'Empty' : ['0']
     }
 
+    filtering_best = {
+        'Valid data' : ['0'],
+        'Cloud state' : ['00'],
+        'Cloud shadow flag' : ['0'],
+        'Snow flag' : ['0'],
+        'Water flag': ['0', '1'],
+        'Aerosol state' : ['00'],
+        'Subzero flag' : ['0'],
+        'Saturation flag' : ['0'],
+        'High sun zenith flag' : ['0'],
+        'Illumination state' : ['00'],
+        'Slope flag' : ['0', '1'],
+        'Water vapor flag' : ['0', '1'],
+        'Empty' : ['0']
+    }
+
+    if best_quality:
+        filtering_list = filtering_best
+    else:
+        filtering_list = filtering_default
     cso_value = [''.join(p) for p in product(*filtering_list.values())]
     cso_value = [x[::-1] for x in cso_value]
     cso_value = [int(x, 2) for x in cso_value]
@@ -447,6 +467,13 @@ def main():
         help='Call this if you only want to print out array lists of spectral values and dates. Creating report is disabled',
         action="store_true"
     )
+
+    parser.add_argument(
+        '--bestquality',
+        help='Enables cloud masking more aggressivly, resulting better quality observations, but potentially less quantity. Default: False',
+        action="store_true",
+    )
+
     parser.add_argument(
         'level2Dir',
         help='FORCE datacube Level-2 directory path, the "datacube-definition.prj" file MUST exist in this directory'
@@ -472,6 +499,8 @@ def main():
 
     isprint = args.printarray
 
+    isbest_qai = args.bestquality
+
     tile, coord_x, coord_y, x_lat, x_lon = find_tile(coords, level2_dir)
 
     tile_path = os.path.join(level2_dir, tile)
@@ -489,7 +518,7 @@ def main():
     boa_values = batch_sample_BOA(boa_files_path, band_list, coord_x, coord_y, desc='Screening BOA')
     qai_values = batch_sample_QAI(qai_files_path, coord_x, coord_y, desc='Screening QAI')
 
-    cso_value = get_cso_value()
+    cso_value = get_cso_value(best_quality=isbest_qai)
     mask = np.isin(qai_values, cso_value)
 
     y_value = boa_values[mask]
