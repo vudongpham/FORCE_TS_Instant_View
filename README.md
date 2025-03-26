@@ -66,7 +66,7 @@ singularity exec ftiv.sif \
 - `--printarray` : Call this if you only want to print out array lists of spectral values and dates. Creating HTML will be disabled. \
       Dates    : [days since 1970-01-01, ...] \
       Spectral : [spectral value, ...]
-
+- `--bestquality` : Enables cloud masking more aggressivly, resulting better quality observations, but potentially less quantity. Default: False. 
 ### 3. Result
 A HTML file will be created, looks like [this](https://vudongpham.github.io/FORCE_TS_Instant_View).\
 (Note: The buttons for `Paper` and `UDF` are just now placeholders!)
