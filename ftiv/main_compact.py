@@ -14,6 +14,7 @@ import os
 import argparse
 import re
 import warnings
+from ftiv import ftiv_version
 warnings.simplefilter("ignore")
 
 # Checking input data
@@ -500,6 +501,8 @@ def main():
     isprint = args.printarray
 
     isbest_qai = args.bestquality
+
+    print(f'ftiv version: {ftiv_version}', flush=True)
 
     tile, coord_x, coord_y, x_lat, x_lon = find_tile(coords, level2_dir)
 
