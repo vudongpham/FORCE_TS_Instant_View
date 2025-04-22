@@ -436,9 +436,11 @@ def batch_sample_QAI(image_paths, x, y, desc='Process 1'):
 
 
 def main():
+    current_version = ftiv_version
+
     check = argparseCondition()
 
-    parser = argparse.ArgumentParser(prog='FTIV', description="This tool produces instal overview of time-series data and interpolation methods from FORCE datacube given location X,Y", add_help=True)
+    parser = argparse.ArgumentParser(prog='FTIV', description=f"FTIV version {current_version}\n.This tool produces instal overview of time-series data and interpolation methods from FORCE datacube given location X,Y", add_help=True)
 
     parser.add_argument(
         '-d', '--daterange',
@@ -501,8 +503,6 @@ def main():
     isprint = args.printarray
 
     isbest_qai = args.bestquality
-
-    print(f'ftiv version: {ftiv_version}', flush=True)
 
     tile, coord_x, coord_y, x_lat, x_lon = find_tile(coords, level2_dir)
 
