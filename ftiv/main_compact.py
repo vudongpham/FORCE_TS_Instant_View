@@ -385,6 +385,7 @@ def days_since_epoch(date_str):
 def get_band_list(band_name, boa_files):
 
     allowed_bands_LND = {
+        'NDVI': 0,
         'RED' : 1,
         'GREEN' : 2, 
         'BLUE': 3,
@@ -394,6 +395,7 @@ def get_band_list(band_name, boa_files):
     }
 
     allowed_bands_SEN = {
+        'NDVI': 0,
         'RED' : 1,
         'GREEN' : 2, 
         'BLUE': 3,
@@ -423,6 +425,31 @@ def batch_sample_BOA(image_paths, band_list, x, y, desc='Process 1'):
             value = next(sample_generator)[0]  # Extract the first (and only) value
         sampled_values.append(value)
     return np.array(sampled_values)
+
+def batch_sample_BOA_NDVI(image_paths, boa_files, x, y, desc='Process 1'):
+    red_list = []
+    nir_list = []
+    for i in tqdm(range(len(image_paths)), desc=desc):
+        sensor = boa_files[i].split('_')[2]
+        if sensor[:3] == 'LND':
+            red_band = 3
+            nir_band = 4
+        else:
+            red_band = 3
+            nir_band = 8
+        
+        with rasterio.open(image_paths[i]) as src:
+            generator = src.sample([(x, y)], indexes=red_band)
+            red_value = next(generator)[0]
+            generator = src.sample([(x, y)], indexes=nir_band)
+            nir_value = next(generator)[0]
+            
+        red_list.append(red_value)
+        nir_list.append(nir_value) 
+    red_list = np.array(red_list)
+    nir_list = np.array(nir_list)
+    ndvi = ((nir_list - red_list) / (nir_list + red_list)) * 10000.
+    return ndvi  
 
 def batch_sample_QAI(image_paths, x, y, desc='Process 1'):
     sampled_values = []
@@ -458,9 +485,9 @@ def main():
     )
     parser.add_argument(
         '-b', '--band',
-        help='Which band to view. Valid value: only one from [RED, GREEN, BLUE, NIR, SWIR1, SWIR2]. Default: NIR',
-        choices=['RED', 'GREEN', 'BLUE', 'NIR', 'SWIR1', 'SWIR2'],
-        default="NIR",
+        help='Which band to view. Valid value: only one from [RED, GREEN, BLUE, NIR, SWIR1, SWIR2, NDVI]. Default: NDVI',
+        choices=['RED', 'GREEN', 'BLUE', 'NIR', 'SWIR1', 'SWIR2', 'NDVI'],
+        default="NDVI",
         type=str,
         metavar='',
     )
@@ -518,7 +545,10 @@ def main():
     boa_files_path = [os.path.join(tile_path, image) for image in boa_files]
     qai_files_path = [os.path.join(tile_path, image) for image in qai_file]
     
-    boa_values = batch_sample_BOA(boa_files_path, band_list, coord_x, coord_y, desc='Screening BOA')
+    if band == 'NDVI':
+        boa_values = batch_sample_BOA_NDVI(boa_files_path, boa_files, coord_x, coord_y, desc='Screening BOA')
+    else:
+        boa_values = batch_sample_BOA(boa_files_path, band_list, coord_x, coord_y, desc='Screening BOA')
     qai_values = batch_sample_QAI(qai_files_path, coord_x, coord_y, desc='Screening QAI')
 
     cso_value = get_cso_value(best_quality=isbest_qai)

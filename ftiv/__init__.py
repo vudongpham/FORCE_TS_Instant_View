@@ -1,1 +1,1 @@
-ftiv_version = '__0.30__'
+ftiv_version = '__1.2__'
