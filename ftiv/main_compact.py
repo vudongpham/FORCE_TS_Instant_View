@@ -215,7 +215,7 @@ class FigureBuilder():
                 if self.debug:
                     print(e)
                 ax.text(x.max()/2, y.max()/2, 'Failed!', ha='center', va='center', fontsize=50, color='red')
-            ax.set_ylim(0, y.max()*1.1)
+            ax.set_ylim(0, 10000)
             ax.set_xlim(xtest.min(), xtest.max())
             ax.set_xticks(dates_show_values)
             ax.set_xticklabels(dates_show_string)
