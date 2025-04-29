@@ -62,7 +62,7 @@ singularity exec ftiv.sif \
 <i>Optional arguments:</i>
 - `-d` | `--daterange`: Start date and end date = date range to be considered. Valid values: [YYYYMMDD,YYYYMMDD] <br><br>
 - `-s` | `--sensors`:   List of sensors separated by ",". Valid values: LND05,LND07,LND08,LND09,SEN2A,SEN2B,... or all. Default: all <br><br>
-- `-b` | `--band`:  Which band to view. Valid value: only one from [RED, GREEN, BLUE, NIR, SWIR1, SWIR2]. Default: NIR <br><br>
+- `-b` | `--band`:  Which band to view. Valid value: only one from [RED, GREEN, BLUE, NIR, SWIR1, SWIR2, NDVI]. Default: NDVI <br><br>
 - `--printarray` : Call this if you only want to print out array lists of spectral values and dates. Creating HTML will be disabled. \
       Dates    : [days since 1970-01-01, ...] \
       Spectral : [spectral value, ...]
