@@ -15,7 +15,7 @@ docker pull vudongpham/ftiv:latest
 ```
 Using singularity
 ```
-singularity pull ftiv.sif docker://vudongpham/ftiv:latest
+singularity pull -F ~/ftiv_latest.sif docker://vudongpham/ftiv:latest
 ```
 ### 2. Example run
 Run with python environment
@@ -40,7 +40,7 @@ docker run --rm  \
 ```
 Run with singularity
 ```
-singularity exec ftiv.sif \
+singularity exec ~/ftiv_latest.sif \
     ftiv --daterange 20180101,20191231 \
     --sensor all \
     --band NIR \
