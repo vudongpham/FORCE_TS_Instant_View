@@ -449,6 +449,7 @@ def batch_sample_BOA_NDVI(image_paths, boa_files, x, y, desc='Process 1'):
     red_list = np.array(red_list)
     nir_list = np.array(nir_list)
     ndvi = ((nir_list - red_list) / (nir_list + red_list)) * 10000.
+    ndvi = ndvi.astype(np.int16)
     return ndvi  
 
 def batch_sample_QAI(image_paths, x, y, desc='Process 1'):
