@@ -316,7 +316,18 @@ def get_cso_value(best_quality=False):
     cso_value.sort()
     return cso_value
 
-def find_tile(latlon_coords, level_2_dir, prj_file_name="datacube-definition.prj"):
+def find_tile(lat, lng, level_2_dir, prj_file_name="datacube-definition.prj"):
+
+    def extract_projection(f_string):
+        if '=' in f_string:
+            f_string = f_string.split('=', 1)[1]
+        return f_string.lstrip().lstrip('*').strip()
+
+    def extract_float(f_string):
+        pattern = r"[+-]?(?:\d+\.\d*|\.\d+|\d+)"
+        value = float(re.search(pattern, f_string).group())
+        return value
+    
     prj_dir = os.path.join(level_2_dir, prj_file_name)
 
     with open(prj_dir, "r") as file:
@@ -324,27 +335,25 @@ def find_tile(latlon_coords, level_2_dir, prj_file_name="datacube-definition.prj
 
     prj_lines = [x.strip() for x in prj_lines]
 
-    proj_wkt = prj_lines[0]
+    proj_wkt = extract_projection(prj_lines[0])
+
     target_crs = rasterio.CRS.from_wkt(proj_wkt)
 
     transformer = Transformer.from_crs("EPSG:4326", target_crs, always_xy=True)
 
-    x_origin = float(prj_lines[3])
-    y_origin = float(prj_lines[4])
-    tile_size = float(prj_lines[5])
+    x_origin = float(extract_float(prj_lines[3]))
+    y_origin = float(extract_float(prj_lines[4]))
+    tile_size_X = float(extract_float(prj_lines[5]))
+    tile_size_Y = float(extract_float(prj_lines[6]))
 
-    latlon_coords = latlon_coords.split(',')
+    x_test, y_test = transformer.transform(lng, lat)
 
-    lat, lon = tuple([float(x) for x in latlon_coords])
-
-    x_test, y_test = transformer.transform(lon, lat)
-
-    tile_X = int(np.floor((x_test - x_origin) / tile_size))
-    tile_Y = int(np.floor((y_origin - y_test) / tile_size))
+    tile_X = int(np.floor((x_test - x_origin) / tile_size_X))
+    tile_Y = int(np.floor((y_origin - y_test) / tile_size_Y))
 
     tile_found = f"X{tile_X:04d}_Y{tile_Y:04d}"
 
-    return tile_found, x_test, y_test, lat, lon
+    return tile_found, x_test, y_test, lat, lng
 
 
 def filter_images(tile_dir, start_date, end_date, sensors='all'):
