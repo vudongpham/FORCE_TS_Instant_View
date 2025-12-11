@@ -343,8 +343,8 @@ def find_tile(latlon_coords, level_2_dir, prj_file_name="datacube-definition.prj
 
     x_origin = float(extract_float(prj_lines[3]))
     y_origin = float(extract_float(prj_lines[4]))
-    tile_size_X = float(extract_float(prj_lines[5]))
-    tile_size_Y = float(extract_float(prj_lines[6]))
+    tile_size = float(extract_float(prj_lines[5]))
+
 
     latlon_coords = latlon_coords.split(',')
 
@@ -352,8 +352,8 @@ def find_tile(latlon_coords, level_2_dir, prj_file_name="datacube-definition.prj
 
     x_test, y_test = transformer.transform(lng, lat)
 
-    tile_X = int(np.floor((x_test - x_origin) / tile_size_X))
-    tile_Y = int(np.floor((y_origin - y_test) / tile_size_Y))
+    tile_X = int(np.floor((x_test - x_origin) / tile_size))
+    tile_Y = int(np.floor((y_origin - y_test) / tile_size))
 
     tile_found = f"X{tile_X:04d}_Y{tile_Y:04d}"
 
