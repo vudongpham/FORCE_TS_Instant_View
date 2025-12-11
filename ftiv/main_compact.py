@@ -316,7 +316,7 @@ def get_cso_value(best_quality=False):
     cso_value.sort()
     return cso_value
 
-def find_tile(lat, lng, level_2_dir, prj_file_name="datacube-definition.prj"):
+def find_tile(latlon_coords, level_2_dir, prj_file_name="datacube-definition.prj"):
 
     def extract_projection(f_string):
         if '=' in f_string:
@@ -345,6 +345,10 @@ def find_tile(lat, lng, level_2_dir, prj_file_name="datacube-definition.prj"):
     y_origin = float(extract_float(prj_lines[4]))
     tile_size_X = float(extract_float(prj_lines[5]))
     tile_size_Y = float(extract_float(prj_lines[6]))
+
+    latlon_coords = latlon_coords.split(',')
+
+    lat, lng = tuple([float(x) for x in latlon_coords])
 
     x_test, y_test = transformer.transform(lng, lat)
 
